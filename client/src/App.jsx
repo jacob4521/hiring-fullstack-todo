@@ -5,6 +5,7 @@ import TodoList from "./components/TodoList.jsx";
 
 const App = () => {
   const [todos, setTodos] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // function to update the all todos to the state
   const getTodos = async () => {
@@ -14,6 +15,8 @@ const App = () => {
       setTodos(data);
     } catch (error) {
       console.error("Error fetching data: ", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -34,7 +37,13 @@ const App = () => {
 
       <AddTodo refreshTodos={getTodos} />
 
-      <TodoList todos={todos} refreshTodos={getTodos} />
+      {isLoading ? (
+        <div className="text-center text-blue-600 font-semibold my-8 animate-pulse">
+          Loading tasks...
+        </div>
+      ) : (
+        <TodoList todos={todos} refreshTodos={getTodos} />
+      )}
     </div>
   );
 };

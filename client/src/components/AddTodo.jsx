@@ -4,6 +4,7 @@ import { createTodo } from "../api.js";
 const AddTodo = ({ refreshTodos }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -11,6 +12,8 @@ const AddTodo = ({ refreshTodos }) => {
     if (!title.trim()) {
       return;
     }
+
+    setIsSubmitting(true);
 
     const newTodo = {
       title: title.trim(),
@@ -23,9 +26,11 @@ const AddTodo = ({ refreshTodos }) => {
       setTitle("");
       setDescription("");
 
-      refreshTodos();
+      await refreshTodos();
     } catch (error) {
       console.error("Error creating task:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -41,6 +46,7 @@ const AddTodo = ({ refreshTodos }) => {
           className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          disabled={isSubmitting}
         />
       </div>
 
@@ -51,14 +57,20 @@ const AddTodo = ({ refreshTodos }) => {
           rows="2"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          disabled={isSubmitting}
         />
       </div>
 
       <button
         type="submit"
-        className="bg-blue-600 text-white font-bold px-4 py-2 w-full rounded hover:bg-blue-700"
+        disabled={isSubmitting}
+        className={`font-bold px-4 py-2 w-full rounded transition-colors ${
+          isSubmitting
+            ? "bg-blue-400 text-white cursor-not-allowed"
+            : "bg-blue-600 text-white hover:bg-blue-700"
+        }`}
       >
-        Add Task
+        {isSubmitting ? "Adding Task..." : "Add Task"}
       </button>
     </form>
   );

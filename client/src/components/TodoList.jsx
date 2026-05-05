@@ -6,6 +6,8 @@ const TodoList = ({ todos, refreshTodos }) => {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
+  const [loadingId, setLoadingId] = useState(null);
+
   // If the array list is empty show this message
   if (todos.length === 0) {
     return (
@@ -15,24 +17,33 @@ const TodoList = ({ todos, refreshTodos }) => {
     );
   }
 
+  // function to delete a todo
   const handleDelete = async (id) => {
     try {
+      setLoadingId(id);
       await deleteTodo(id);
       refreshTodos();
     } catch (error) {
       console.error("Error deleting task:", error);
+    } finally {
+      setLoadingId(null);
     }
   };
 
+  // Function to toggle the done status of a todo
   const handleToggleDone = async (id) => {
     try {
+      setLoadingId(id);
       await toggleTodoDone(id);
       refreshTodos();
     } catch (error) {
       console.error("Error toggling task status:", error);
+    } finally {
+      setLoadingId(null);
     }
   };
 
+  // Function to handle the edit button click
   const handleEditClick = async (id) => {
     try {
       setEditingId(id);
@@ -43,6 +54,7 @@ const TodoList = ({ todos, refreshTodos }) => {
     }
   };
 
+  // Function to handle the save button click after editing
   const handleSaveEdit = async (id) => {
     try {
       const updatedTodo = {
@@ -63,6 +75,7 @@ const TodoList = ({ todos, refreshTodos }) => {
 
   return (
     <div className="space-y-4">
+      {/* Loop through the todos and render each one */}
       {todos.map((todo) => (
         <div
           key={todo._id}
@@ -102,14 +115,16 @@ const TodoList = ({ todos, refreshTodos }) => {
               </div>
             </div>
           ) : (
-            // Normal mode UI
+            // Normal mode UI 
             <div className="flex justify-between items-center w-full">
               {/* Left side: Checkbox and text */}
               <div className="flex items-center space-x-4 overflow-hidden flex-1 min-w-0">
+                {/* checkbox based on the loading state */}
                 <input
                   type="checkbox"
                   checked={todo.done}
                   onChange={() => handleToggleDone(todo._id)}
+                  disabled={loadingId === todo._id}
                   className="w-5 h-5 cursor-pointer accent-blue-600 shrink-0"
                 />
 
@@ -134,11 +149,18 @@ const TodoList = ({ todos, refreshTodos }) => {
                 >
                   Edit
                 </button>
+
+                {/* Delete button based on the loading state */}
                 <button
                   onClick={() => handleDelete(todo._id)}
-                  className="text-sm text-red-600 font-semibold hover:text-red-800 cursor-pointer transition-colors"
+                  disabled={loadingId === todo._id}
+                  className={`text-sm font-semibold transition-colors ${
+                    loadingId === todo._id
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-red-600 hover:text-red-800 cursor-pointer"
+                  }`}
                 >
-                  Delete
+                  {loadingId === todo._id ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>
