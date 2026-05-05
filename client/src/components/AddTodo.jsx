@@ -2,12 +2,10 @@ import { useState } from "react";
 import { createTodo } from "../api.js";
 
 const AddTodo = ({ refreshTodos }) => {
-  // 1. මෙතන title සහ description සඳහා useState hooks දෙක හදන්න (initial state එක හිස් string එකක් '' වෙන්න ඕනේ)
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
   const handleSubmit = async (e) => {
-    // 2. Form එක submit වෙද්දි page එක අලුතින් reload වෙන එක නවත්වන්න (Hint: e.prevent...)
     e.preventDefault();
 
     if (!title.trim()) {
@@ -37,7 +35,6 @@ const AddTodo = ({ refreshTodos }) => {
       className="mb-8 p-4 bg-gray-50 border rounded-lg shadow-sm"
     >
       <div className="mb-4">
-        {/* 4. මේ input එකේ 'value' එක සහ 'onChange' event එක set කරන්න */}
         <input
           type="text"
           placeholder="Task Title"
@@ -48,7 +45,6 @@ const AddTodo = ({ refreshTodos }) => {
       </div>
 
       <div className="mb-4">
-        {/* 5. මේ textarea එකේ 'value' එක සහ 'onChange' event එක set කරන්න */}
         <textarea
           placeholder="Description (Optional)"
           className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
