@@ -6,7 +6,7 @@ const TodoList = ({ todos, refreshTodos }) => {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
-  const [loadingId, setLoadingId] = useState(null);
+  const [loadingState, setLoadingState] = useState({ id: null, action: null });
 
   // If the array list is empty show this message
   if (todos.length === 0) {
@@ -20,26 +20,28 @@ const TodoList = ({ todos, refreshTodos }) => {
   // function to delete a todo
   const handleDelete = async (id) => {
     try {
-      setLoadingId(id);
+      setLoadingState({id: id, action: "delete"});
       await deleteTodo(id);
       refreshTodos();
     } catch (error) {
       console.error("Error deleting task:", error);
+      alert("Failed to delete task. Please try again.");
     } finally {
-      setLoadingId(null);
+      setLoadingState({id: null, action: null});
     }
   };
 
   // Function to toggle the done status of a todo
   const handleToggleDone = async (id) => {
     try {
-      setLoadingId(id);
+      setLoadingState({id: id, action: "toggle"});
       await toggleTodoDone(id);
       refreshTodos();
     } catch (error) {
       console.error("Error toggling task status:", error);
+      alert("Failed to update task status. Please try again.");
     } finally {
-      setLoadingId(null);
+      setLoadingState({id: null, action: null});
     }
   };
 
@@ -57,7 +59,7 @@ const TodoList = ({ todos, refreshTodos }) => {
   // Function to handle the save button click after editing
   const handleSaveEdit = async (id) => {
     try {
-      setLoadingId(id);
+      setLoadingState({id: id, action: "update"});
       const updatedTodo = {
         title: editTitle,
         description: editDescription,
@@ -71,8 +73,9 @@ const TodoList = ({ todos, refreshTodos }) => {
       setEditDescription("");
     } catch (error) {
       console.error("Error updating task:", error);
+      alert("Failed to update task. Please try again.");
     } finally {
-      setLoadingId(null);
+      setLoadingState({id: null, action: null});
     }
   };
 
@@ -113,14 +116,14 @@ const TodoList = ({ todos, refreshTodos }) => {
                 {/* Save button based on the loading state */}
                 <button
                   onClick={() => handleSaveEdit(todo._id)}
-                  disabled={loadingId === todo._id}
+                  disabled={loadingState.id === todo._id}
                   className={`px-4 py-1.5 text-sm font-semibold rounded transition-colors ${
-                    loadingId === todo._id
+                    loadingState.id === todo._id && loadingState.action === "update"
                       ? "bg-blue-400 text-white cursor-not-allowed" // Loading වෙද්දී පේන පාට
                       : "bg-blue-600 text-white hover:bg-blue-700"
                   }`}
                 >
-                  {loadingId === todo._id ? "Saving..." : "Save"}
+                  {loadingState.id === todo._id && loadingState.action === "update" ? "Saving..." : "Save"}
                 </button>
               </div>
             </div>
@@ -134,7 +137,7 @@ const TodoList = ({ todos, refreshTodos }) => {
                   type="checkbox"
                   checked={todo.done}
                   onChange={() => handleToggleDone(todo._id)}
-                  disabled={loadingId === todo._id}
+                  disabled={loadingState.id === todo._id && loadingState.action === "toggle"}
                   className="w-5 h-5 cursor-pointer accent-blue-600 shrink-0"
                 />
 
@@ -163,14 +166,14 @@ const TodoList = ({ todos, refreshTodos }) => {
                 {/* Delete button based on the loading state */}
                 <button
                   onClick={() => handleDelete(todo._id)}
-                  disabled={loadingId === todo._id}
+                  disabled={loadingState.id === todo._id && loadingState.action === "delete"}
                   className={`text-sm font-semibold transition-colors ${
-                    loadingId === todo._id
+                    loadingState.id === todo._id && loadingState.action === "delete"
                       ? "text-gray-400 cursor-not-allowed"
                       : "text-red-600 hover:text-red-800 cursor-pointer"
                   }`}
                 >
-                  {loadingId === todo._id ? "Deleting..." : "Delete"}
+                  {loadingState.id === todo._id && loadingState.action === "delete" ? "Deleting..." : "Delete"}
                 </button>
               </div>
             </div>

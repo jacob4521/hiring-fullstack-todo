@@ -5,6 +5,7 @@ const AddTodo = ({ refreshTodos }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,6 +14,7 @@ const AddTodo = ({ refreshTodos }) => {
       return;
     }
 
+    setErrorMessage("");
     setIsSubmitting(true);
 
     const newTodo = {
@@ -29,6 +31,7 @@ const AddTodo = ({ refreshTodos }) => {
       await refreshTodos();
     } catch (error) {
       console.error("Error creating task:", error);
+      setErrorMessage("Failed to add task. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -39,6 +42,13 @@ const AddTodo = ({ refreshTodos }) => {
       onSubmit={handleSubmit}
       className="mb-8 p-4 bg-gray-50 border rounded-lg shadow-sm"
     >
+      {/* Error Message */}
+      {errorMessage && (
+        <div className="mb-4 text-sm text-red-600 bg-red-100 p-2 rounded border border-red-200">
+          {errorMessage}
+        </div>
+      )}
+
       <div className="mb-4">
         <input
           type="text"
