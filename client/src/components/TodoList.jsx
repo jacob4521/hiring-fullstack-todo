@@ -57,19 +57,22 @@ const TodoList = ({ todos, refreshTodos }) => {
   // Function to handle the save button click after editing
   const handleSaveEdit = async (id) => {
     try {
+      setLoadingId(id);
       const updatedTodo = {
         title: editTitle,
         description: editDescription,
       };
 
       await updateTodo(id, updatedTodo);
-      refreshTodos();
+      await refreshTodos();
 
       setEditingId(null);
       setEditTitle("");
       setEditDescription("");
     } catch (error) {
       console.error("Error updating task:", error);
+    } finally {
+      setLoadingId(null);
     }
   };
 
@@ -106,16 +109,23 @@ const TodoList = ({ todos, refreshTodos }) => {
                 >
                   Cancel
                 </button>
+
+                {/* Save button based on the loading state */}
                 <button
                   onClick={() => handleSaveEdit(todo._id)}
-                  className="px-4 py-1.5 text-sm bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors"
+                  disabled={loadingId === todo._id}
+                  className={`px-4 py-1.5 text-sm font-semibold rounded transition-colors ${
+                    loadingId === todo._id
+                      ? "bg-blue-400 text-white cursor-not-allowed" // Loading වෙද්දී පේන පාට
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
                 >
-                  Save
+                  {loadingId === todo._id ? "Saving..." : "Save"}
                 </button>
               </div>
             </div>
           ) : (
-            // Normal mode UI 
+            // Normal mode UI
             <div className="flex justify-between items-center w-full">
               {/* Left side: Checkbox and text */}
               <div className="flex items-center space-x-4 overflow-hidden flex-1 min-w-0">
