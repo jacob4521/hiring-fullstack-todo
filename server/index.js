@@ -3,6 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import dns from "node:dns/promises";
+import todoRoutes from "./routes/todoRoutes.js";
 
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
@@ -15,6 +16,10 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+
+// Routes
+app.use("/api/todos", todoRoutes);
 
 const PORT = process.env.PORT || 5000;
 
