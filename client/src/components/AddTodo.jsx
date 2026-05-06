@@ -11,6 +11,7 @@ const AddTodo = ({ refreshTodos }) => {
     e.preventDefault();
 
     if (!title.trim()) {
+      setErrorMessage("Task title is required.");
       return;
     }
 
@@ -55,7 +56,10 @@ const AddTodo = ({ refreshTodos }) => {
           placeholder="Task Title"
           className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            setTitle(e.target.value)
+            setErrorMessage("")
+          }}
           disabled={isSubmitting}
         />
       </div>
